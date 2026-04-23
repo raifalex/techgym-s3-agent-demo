@@ -41,3 +41,6 @@ logs/
 .coverage
 htmlcov/
 .tox/
+
+# Generated on first run of demo_layout.sh
+switch_task.sh
