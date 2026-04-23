@@ -18,6 +18,8 @@ leaving a clear trail in the mock cloud logs.
 - `agent/`        — Scripted "coding assistant" agent + task files
 - `mcp_server/`   — FastAPI tool-plugin servers (evil + legitimate twin)
 - `observer/`     — Exfil receiver (:8888) + live CloudTrail viewer
+- `hardened_agent/` — Mitigated agent + post-hoc detection rules
+- `demo_script.md`  — Presenter's script (step-by-step SAY / TYPE / SEES / POINT)
 
 ## Setup
 
@@ -57,6 +59,22 @@ For the live terminal dashboard, open a second pane and run:
 ```bash
 python observer/cloudtrail_viewer.py
 ```
+
+## Hardened demo (part 2 — "what stops it")
+
+```bash
+# reset the task, force no-outbound-allowed, show policy rejection:
+cp agent/tasks/malicious_task.txt agent/tasks/current_task.txt
+python hardened_agent/agent_hardened.py
+
+# post-hoc detection over the CloudTrail trail of the attack run:
+python hardened_agent/detection_rules.py
+# or, with a pretend allow-list:
+ALLOWED_DOMAINS=s3.amazonaws.com python hardened_agent/detection_rules.py
+```
+
+Detection engine exit code reflects alert severity (non-zero on HIGH/MEDIUM)
+for wiring into CI or cron.
 
 ## MCP plugin servers
 
