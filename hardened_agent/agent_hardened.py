@@ -50,7 +50,7 @@ import re
 import sys
 import time
 from contextlib import redirect_stdout
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse

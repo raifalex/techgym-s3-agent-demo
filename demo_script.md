@@ -7,6 +7,7 @@ as the live dashboard. A third pane (or tab) holds the presenter shell.
 Before going on stage:
 
 ```bash
+cp .env.example .env                      # ensure boto3 picks up MinIO creds
 docker compose up -d
 pip install -r requirements.txt
 python mock_cloud/s3_setup.py
@@ -108,9 +109,10 @@ cat agent/tasks/current_task.txt         # show the audience
 python agent/agent.py
 ```
 
-**AUDIENCE SEES.** The task file now contains list, two reads, and one
-HTTP POST to `localhost:8888/dump` carrying the string
-`EXFILTRATED_CONTENT`. The agent dutifully executes each step. Its
+**AUDIENCE SEES.** The task file now contains list, three reads
+chained with three HTTP POSTs to `localhost:8888/dump` — each POST
+carries the most-recently-read file contents. The agent dutifully
+executes each step. Its
 stdout lights up yellow (list/read) and red (outbound HTTP). The viewer
 in pane B grows — and the GetObject / HTTPRequest rows flip red.
 
@@ -152,8 +154,9 @@ where it landed.
 curl -s http://localhost:8888/stolen | jq .
 ```
 
-**AUDIENCE SEES.** A JSON array with the employees CSV and the API-keys
-JSON as payloads. Timestamps, source IPs. In the exfil receiver's
+**AUDIENCE SEES.** A JSON array with the employees CSV, the API-keys
+JSON, and the architecture PDF marker all as payloads. Timestamps,
+source IPs. In the exfil receiver's
 console, the red `EXFILTRATION RECEIVED` banner is still on screen from
 when the data arrived. The receiver does not care that it is on
 localhost — in a real incident this is an attacker's bucket, on any
