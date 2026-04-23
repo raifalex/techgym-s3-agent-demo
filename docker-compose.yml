@@ -1,0 +1,27 @@
+# Local mock-cloud stack.
+#
+# Real-world analog: a small AWS account with S3 enabled. MinIO implements
+# the S3 API so boto3 and AWS SDKs talk to it unmodified via AWS_ENDPOINT_URL.
+#
+# Only MinIO is defined here; FastAPI services (exfil sink, MCP tool server,
+# observer) are added in later steps.
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: obedient-insider-minio
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web console
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./minio-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
