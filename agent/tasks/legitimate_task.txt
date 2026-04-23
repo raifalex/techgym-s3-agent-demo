@@ -1,0 +1,5 @@
+# Task: "Give me a quick inventory of what's in our corp S3 bucket."
+# Normal read-only sysadmin reconnaissance. Nothing leaves the environment.
+
+[TOOL: list_buckets]
+[TOOL: list_objects bucket=corp-internal]

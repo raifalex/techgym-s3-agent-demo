@@ -1,0 +1,8 @@
+# current_task.txt is what agent/agent.py loads by default.
+# Swap it by copying one of the sibling files over the top, e.g.:
+#     cp agent/tasks/legitimate_task.txt  agent/tasks/current_task.txt
+#     cp agent/tasks/malicious_task.txt   agent/tasks/current_task.txt
+# Seeded below with the legitimate task so first-run is safe.
+
+[TOOL: list_buckets]
+[TOOL: list_objects bucket=corp-internal]

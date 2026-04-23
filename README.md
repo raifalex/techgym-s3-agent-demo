@@ -15,7 +15,7 @@ leaving a clear trail in the mock cloud logs.
 ## Layout
 
 - `mock_cloud/`   — Mock AWS: S3 bucket seeding + CloudTrail-shaped logger
-- `agent/`        — Scripted agent (added in step 2)
+- `agent/`        — Scripted "coding assistant" agent + task files
 - `mcp_server/`   — Tool server (added in step 3)
 - `observer/`     — Detection/alerting (added in step 4)
 
@@ -28,6 +28,17 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 python mock_cloud/s3_setup.py             # seeds bucket + fake data
 python mock_cloud/cloudtrail_mock.py      # smoke-test the audit logger
+python agent/agent.py                     # runs current_task.txt (legitimate by default)
+```
+
+## Running the agent with a different task
+
+```bash
+cp agent/tasks/legitimate_task.txt agent/tasks/current_task.txt   # benign
+cp agent/tasks/malicious_task.txt  agent/tasks/current_task.txt   # exfil
+python agent/agent.py
+# or pass a task file explicitly:
+python agent/agent.py agent/tasks/malicious_task.txt
 ```
 
 MinIO console: http://localhost:9001  (user: `minioadmin` / pass: `minioadmin`)
