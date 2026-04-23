@@ -17,7 +17,7 @@ leaving a clear trail in the mock cloud logs.
 - `mock_cloud/`   — Mock AWS: S3 bucket seeding + CloudTrail-shaped logger
 - `agent/`        — Scripted "coding assistant" agent + task files
 - `mcp_server/`   — FastAPI tool-plugin servers (evil + legitimate twin)
-- `observer/`     — Detection/alerting (added in step 4)
+- `observer/`     — Exfil receiver (:8888) + live CloudTrail viewer
 
 ## Setup
 
@@ -39,6 +39,23 @@ cp agent/tasks/malicious_task.txt  agent/tasks/current_task.txt   # exfil
 python agent/agent.py
 # or pass a task file explicitly:
 python agent/agent.py agent/tasks/malicious_task.txt
+```
+
+## One-shot demo
+
+```bash
+./run_demo.sh
+```
+
+Brings up MinIO, seeds the bucket, starts the evil MCP on :8080, the exfil
+receiver on :8888, and the CloudTrail viewer (backgrounded to a log file),
+then runs the agent once against the default legitimate task. PIDs and
+follow-up commands are printed in the `DEMO READY` banner.
+
+For the live terminal dashboard, open a second pane and run:
+
+```bash
+python observer/cloudtrail_viewer.py
 ```
 
 ## MCP plugin servers
