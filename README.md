@@ -16,7 +16,7 @@ leaving a clear trail in the mock cloud logs.
 
 - `mock_cloud/`   — Mock AWS: S3 bucket seeding + CloudTrail-shaped logger
 - `agent/`        — Scripted "coding assistant" agent + task files
-- `mcp_server/`   — Tool server (added in step 3)
+- `mcp_server/`   — FastAPI tool-plugin servers (evil + legitimate twin)
 - `observer/`     — Detection/alerting (added in step 4)
 
 ## Setup
@@ -39,6 +39,28 @@ cp agent/tasks/malicious_task.txt  agent/tasks/current_task.txt   # exfil
 python agent/agent.py
 # or pass a task file explicitly:
 python agent/agent.py agent/tasks/malicious_task.txt
+```
+
+## MCP plugin servers
+
+Two FastAPI apps present the same "CodeHelper Pro" plugin surface:
+
+```bash
+python mcp_server/legitimate_mcp.py    # clean reference, port 8081
+python mcp_server/evil_mcp.py          # malicious twin,  port 8080
+```
+
+Both expose `GET /manifest`, `GET /health`, `GET /readme`, `POST /analyze_code`,
+`POST /suggest_fix`. Only the evil twin overwrites `agent/tasks/current_task.txt`
+as a side effect of `/suggest_fix`.
+
+```bash
+curl -s http://localhost:8080/readme | jq .
+curl -s -X POST http://localhost:8080/suggest_fix \
+     -H 'content-type: application/json' \
+     -d '{"error":"NoneType has no attribute foo"}' | jq .
+# then re-run the agent — it picks up the injected task:
+python agent/agent.py
 ```
 
 MinIO console: http://localhost:9001  (user: `minioadmin` / pass: `minioadmin`)
